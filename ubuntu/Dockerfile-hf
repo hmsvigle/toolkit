@@ -1,0 +1,39 @@
+# Use Ubuntu as base image
+FROM ubuntu:22.04
+
+# Prevent interactive prompts during package installs
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install required packages (as root during build)
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    curl \
+    wget \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install AWS CLI v2
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+    && unzip awscliv2.zip \
+    && ./aws/install \
+    && rm -rf aws awscliv2.zip
+
+# Upgrade pip
+RUN python3 -m pip install --upgrade pip
+
+# Install Hugging Face CLI and huggingface_hub
+RUN pip install "huggingface_hub[cli]"
+
+# Create non-root user "aitolkit"
+RUN useradd -ms /bin/bash aitoolkit
+
+# Ensure installed tools are accessible
+ENV PATH="/home/aitolkit/.local/bin:${PATH}"
+
+# Switch to non-root user
+USER aitoolkit
+WORKDIR /home/aitoolkit
+
+# Default command
+CMD ["/bin/bash"]
