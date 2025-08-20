@@ -26,10 +26,10 @@ RUN python3 -m pip install --upgrade pip
 RUN pip install "huggingface_hub[cli]"
 
 # Create non-root user "aitolkit"
-RUN useradd -ms /bin/bash aitoolkit
+RUN useradd -u 9999 -ms /bin/bash aitoolkit
 
 # Ensure installed tools are accessible
-ENV PATH="/home/aitolkit/.local/bin:${PATH}"
+ENV PATH="/home/aitoolkit/.local/bin:${PATH}"
 
 # Switch to non-root user
 USER aitoolkit
